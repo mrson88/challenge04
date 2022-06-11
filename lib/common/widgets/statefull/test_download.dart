@@ -41,7 +41,7 @@ mixin DownloadImgMixinStateful<T extends StatefulWidget> on State<T> {
         toast('Downloaded');
       }
     } catch (e) {
-      print('e = $e');
+      debugPrint('e = $e');
       return;
     }
   }

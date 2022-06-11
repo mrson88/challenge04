@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:challenge04/common/widgets/statefull/test.dart';
+
 
 import 'package:http/http.dart' as http;
 // import 'package:social_api/models/random_user.dart';
@@ -124,7 +124,7 @@ class _CallApiDemoPageState extends State<CallApiDemoPage>
 
       logger.log(_value.toString());
     } catch (e) {
-      print('error = $e');
+      debugPrint('error = $e');
       rethrow;
     }
   }
@@ -140,9 +140,9 @@ class _CallApiDemoPageState extends State<CallApiDemoPage>
           .map((json) => RandomUser.fromJson(json))
           .toList();
 
-      print(users);
+      debugPrint(users);
     } catch (e) {
-      print('error = $e');
+      debugPrint('error = $e');
       rethrow;
     }
   }

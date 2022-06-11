@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:challenge04/models/user_model.dart';
 import 'package:challenge04/themes/app_styles.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:overlay_support/overlay_support.dart';
 import 'package:path_provider/path_provider.dart';
+
 class DownloadFile extends StatefulWidget {
   const DownloadFile({Key? key}) : super(key: key);
   static String id = 'download_file';
@@ -15,24 +17,23 @@ class DownloadFile extends StatefulWidget {
 }
 
 class _DownloadFileDemoState extends State<DownloadFile> {
-    @override
+  @override
   void initState() {
     super.initState();
     _useHttp();
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
+  List list = [];
   List _user = [];
-  List _img_address = [];
+
   LogProvider get logger => const LogProvider('⚡️ CallApiDemoPage');
   final urlString = 'https://randomuser.me/api/?results=20';
   double _progressBarValue = 0;
   String paste = '';
   TextEditingController controller = TextEditingController();
   var imageUrl =
-      "https://upload.wikimedia.org/wikipedia/commons/0/06/Tr%C3%BAc_Anh_%E2%80%93_M%E1%BA%AFt_bi%E1%BA%BFc_BTS_%282%29.png";
+      "https://image.thanhnien.vn/w1024/Uploaded/2022/tnabtw/2021_12_09/ta03-7305.jpg";
   bool downloading = true;
   String downloadingStr = "No data";
   String savePath = "";
@@ -49,23 +50,22 @@ class _DownloadFileDemoState extends State<DownloadFile> {
             backgroundColor: Colors.black,
           ),
           body: Column(
-            children: [scrollViewHorizontal(_user,80,80,5),
-      
+            children: [
+              scrollViewHorizontal(list, 80, 80, 5),
               Center(
                 child: downloading
                     ? SizedBox(
-                      height: size,
-                      width: size,
-                      child: Card(
-                        
-                        child: Center(
-                          child: Text(
-                            downloadingStr,
-                            style: const TextStyle(color: Colors.white),
+                        height: size,
+                        width: size,
+                        child: Card(
+                          child: Center(
+                            child: Text(
+                              downloadingStr,
+                              style: const TextStyle(color: Colors.white),
+                            ),
                           ),
                         ),
-                      ),
-                    )
+                      )
                     : SizedBox(
                         height: size,
                         width: size,
@@ -117,7 +117,7 @@ class _DownloadFileDemoState extends State<DownloadFile> {
   Future downloadFile() async {
     try {
       final dio = Dio();
-      print(imageUrl);
+      debugPrint(imageUrl);
 
       final fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 
@@ -129,7 +129,7 @@ class _DownloadFileDemoState extends State<DownloadFile> {
           var download = _progressBarValue * 100;
           downloadingStr = "Downloading Image : ${download.toInt()} %";
 
-          print(download);
+          debugPrint(download.toString());
         });
       });
       setState(() {
@@ -146,7 +146,7 @@ class _DownloadFileDemoState extends State<DownloadFile> {
         }
       });
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 
@@ -168,16 +168,29 @@ class _DownloadFileDemoState extends State<DownloadFile> {
       // logger.log(res.statusCode.toString());
 
       final users = await jsonDecode(res.body);
+
       _user = users['results'];
+      print(_user);
+      list = _user.map((data) => Results.fromJson(data)).toList();
+
+      print(list[0].name.first);
+
+      // print(Results.fromJson(users).gender);
+
+      // final list =
+      //     (users['results'] as List).map((e) => Model.fromJson(e)).toList();
+      // final result = Results.fromJson(users);
+      // debugPrint('result=${list[0].toString()}');
+      // debugPrint(users.toString());
+
       // print(_user);
-      print(_user[0]);
-      print(_user[0]['picture']['medium']);
+      // debugPrint(_user[0].toString());
+      // debugPrint(_user[0]['picture']['medium']);
     } catch (e) {
-      print('error = $e');
+      debugPrint('error = $e');
       rethrow;
-    }setState(() {
-      
-    });
+    }
+    setState(() {});
   }
 }
 
@@ -191,59 +204,65 @@ class LogProvider {
     print('$prefix $content');
   }
 }
-SingleChildScrollView scrollViewHorizontal(List user,double height,double width,double size) {
+
+SingleChildScrollView scrollViewHorizontal(
+    List user, double height, double width, double size) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: user.isNotEmpty
         ? Row(
             children: List.generate(user.length, (index) {
               return Padding(
-                padding:  EdgeInsets.only(top: size, bottom: size, left: size),
+                padding: EdgeInsets.only(top: size, bottom: size, left: size),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
                       padding: const EdgeInsets.only(bottom: 9),
-                      child: Stack(
+                      child: Column(
                         children: [
-                          Container(
-                            height: height,
-                            width: width,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: NetworkImage(
-                                        user[index]['picture']['medium']),
-                                    fit: BoxFit.cover)),
+                          Center(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: height,
+                                  width: width,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                              user[index].picture.medium),
+                                          fit: BoxFit.cover)),
+                                ),
+                                Text(
+                                  user[index].name.first.toString(),
+                                  style: const TextStyle(
+                                      color: Colors.black, height: 10),
+                                  textAlign: TextAlign.center,
+                                ),
+                                // user[index]['status'].toString() == 'online'
+                                //     ? Positioned(
+                                //         top: 45,
+                                //         left: 42,
+                                //         child: Container(
+                                //           width: 15,
+                                //           height: 15,
+                                //           decoration: BoxDecoration(
+                                //             color: Colors.green,
+                                //             shape: BoxShape.circle,
+                                //             border: Border.all(
+                                //                 color: AppColors.textColor,
+                                //                 width: 2.5),
+                                //           ),
+                                //         ),
+                                //       )
+                                //     : Container()
+                              ],
+                            ),
                           ),
-                          // user[index]['status'].toString() == 'online'
-                          //     ? Positioned(
-                          //         top: 45,
-                          //         left: 42,
-                          //         child: Container(
-                          //           width: 15,
-                          //           height: 15,
-                          //           decoration: BoxDecoration(
-                          //             color: Colors.green,
-                          //             shape: BoxShape.circle,
-                          //             border: Border.all(
-                          //                 color: AppColors.textColor,
-                          //                 width: 2.5),
-                          //           ),
-                          //         ),
-                          //       )
-                          //     : Container()
-                        Container(alignment: Alignment.center,
-                          child: Center(
-                            child: Text(
-                      user[index]['name']['first'].toString(),
-                      style:const TextStyle(color: Colors.black,height: 10),
-                    ),
-                          ),
-                        ),],
+                        ],
                       ),
                     ),
-                    
                   ],
                 ),
               );

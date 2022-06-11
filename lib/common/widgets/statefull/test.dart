@@ -87,7 +87,7 @@ class _DownloadFileDemoState extends State<TestPage> {
         downloadingStr = "Completed";
       });
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
   }
 
